@@ -4,9 +4,10 @@ const { systemPrompt } = require('../prompts/system');
 const client = new Anthropic();
 
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514';
-const MAX_TOKENS = 4096;
+const MAX_TOKENS = parseInt(process.env.MAX_TOKENS || '64000', 10);
 
 function streamChat(messages, res) {
+	res.setTimeout(0); // Disable timeout for long-running SSE streams
 	res.writeHead(200, {
 		'Content-Type': 'text/event-stream',
 		'Cache-Control': 'no-cache',

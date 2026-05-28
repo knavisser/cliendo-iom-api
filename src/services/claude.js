@@ -3,8 +3,16 @@ const { systemPrompt } = require('../prompts/system');
 
 const client = new Anthropic();
 
-const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-20250514';
+const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 const MAX_TOKENS = parseInt(process.env.MAX_TOKENS || '64000', 10);
+
+const cachedSystem = [
+	{
+		type: 'text',
+		text: systemPrompt,
+		cache_control: { type: 'ephemeral' },
+	},
+];
 
 function streamChat(messages, res) {
 	res.setTimeout(0); // Disable timeout for long-running SSE streams
@@ -29,7 +37,7 @@ function streamChat(messages, res) {
 			const stream = client.messages.stream({
 				model: MODEL,
 				max_tokens: MAX_TOKENS,
-				system: systemPrompt,
+				system: cachedSystem,
 				messages,
 			});
 
